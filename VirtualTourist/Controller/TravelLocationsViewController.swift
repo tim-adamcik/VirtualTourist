@@ -15,6 +15,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
+    var annotations = [MKPointAnnotation]()
     
     fileprivate func findCurrentLocation() {
         locationManager.requestWhenInUseAuthorization()
@@ -56,6 +57,21 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
         myPin.coordinate = myCoordinate
         myPin.title = "Title"
         mapView.addAnnotation(myPin)
+        annotations.append(myPin)
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let identifer = "idForView"
+        var view = mapView.dequeueReusableAnnotationView(withIdentifier: identifer) as? MKPinAnnotationView
+        if view == nil {
+            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifer)
+            view!.canShowCallout = true
+            view!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            return view
+        } else {
+            view!.annotation = annotation
+        }
+        return view
     }
 
 
