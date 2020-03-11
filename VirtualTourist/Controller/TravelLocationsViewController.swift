@@ -15,7 +15,8 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
-    var annotations = [MKPointAnnotation]()
+    var annotations = [Pin]()
+    var dataController: DataController!
     
     fileprivate func findCurrentLocation() {
         locationManager.requestWhenInUseAuthorization()
@@ -48,15 +49,17 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
     }
     
     @objc private func recognizeLongPress(_ sender: UILongPressGestureRecognizer) {
-        if sender.state != UIGestureRecognizer.State.began {
-            return
-        }
+        guard sender.state == UIGestureRecognizer.State.began else { return }
         let location = sender.location(in: mapView)
         let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
         let myPin: MKPointAnnotation = MKPointAnnotation()
         myPin.coordinate = myCoordinate
         mapView.addAnnotation(myPin)
-        annotations.append(myPin)
+        let pin = Pin(context: DataController.shared.viewContext)
+        pin.latitude = Double(myCoordinate.latitude)
+        pin.longitude = Double(myCoordinate.longitude)
+        annotations.append(pin)
+        DataController.shared.save()
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
