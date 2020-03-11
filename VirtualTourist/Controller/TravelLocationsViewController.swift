@@ -55,7 +55,6 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
         let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
         let myPin: MKPointAnnotation = MKPointAnnotation()
         myPin.coordinate = myCoordinate
-        myPin.title = "Title"
         mapView.addAnnotation(myPin)
         annotations.append(myPin)
     }
@@ -72,6 +71,11 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
             view!.annotation = annotation
         }
         return view
+    }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        let vc = storyboard?.instantiateViewController(identifier: "PhotoAlbumViewController") as! PhotoAlbumViewController
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 
