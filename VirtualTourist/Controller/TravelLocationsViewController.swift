@@ -41,8 +41,22 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
         mapView.delegate = self
         setCenter()
         findCurrentLocation()
+        let myLongPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
+        myLongPress.addTarget(self, action: #selector(recognizeLongPress(_ :)))
+        mapView.addGestureRecognizer(myLongPress)
     }
     
+    @objc private func recognizeLongPress(_ sender: UILongPressGestureRecognizer) {
+        if sender.state != UIGestureRecognizer.State.began {
+            return
+        }
+        let location = sender.location(in: mapView)
+        let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
+        let myPin: MKPointAnnotation = MKPointAnnotation()
+        myPin.coordinate = myCoordinate
+        myPin.title = "Title"
+        mapView.addAnnotation(myPin)
+    }
 
 
     
