@@ -17,6 +17,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
     
+    var currentLatitude: Double?
+    var currentLongitude: Double?
+    
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 10
     }
@@ -32,9 +36,28 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        smallMapView.delegate = self
+        setCenter()
     }
     
     
     @IBAction func newCollectionBtnPressed(_ sender: Any) {
+    }
+}
+
+extension PhotoAlbumViewController: MKMapViewDelegate {
+    
+    func setCenter() {
+        if let latitude = currentLatitude,
+            let longitude = currentLongitude {
+        let center: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            smallMapView.setCenter(center, animated: true)
+            let mySpan: MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+            let myRegion: MKCoordinateRegion = MKCoordinateRegion(center: center, span: mySpan)
+            smallMapView.setRegion(myRegion, animated: true)
+            let annotation: MKPointAnnotation = MKPointAnnotation()
+            annotation.coordinate = center
+            smallMapView.addAnnotation(annotation)
+        }
     }
 }

@@ -17,6 +17,8 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
     
     var annotations = [Pin]()
     var dataController: DataController!
+    var latitude: Double?
+    var longitude: Double?
     
     fileprivate func findCurrentLocation() {
         locationManager.requestWhenInUseAuthorization()
@@ -54,6 +56,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
         let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
         let myPin: MKPointAnnotation = MKPointAnnotation()
         myPin.coordinate = myCoordinate
+        myPin.title = "Photos"
         mapView.addAnnotation(myPin)
         let pin = Pin(context: DataController.shared.viewContext)
         pin.latitude = Double(myCoordinate.latitude)
@@ -76,13 +79,17 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
         return view
     }
     
-    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         let vc = storyboard?.instantiateViewController(identifier: "PhotoAlbumViewController") as! PhotoAlbumViewController
+        let locationLat = view.annotation?.coordinate.latitude
+        let locationLon = view.annotation?.coordinate.longitude
+        let myCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: locationLat!, longitude: locationLon!)
+        let selectedPin: MKPointAnnotation = MKPointAnnotation()
+        selectedPin.coordinate = myCoordinate
+        vc.currentLatitude = myCoordinate.latitude
+        vc.currentLongitude = myCoordinate.longitude
         navigationController?.pushViewController(vc, animated: true)
     }
-
-
     
-
 }
 
