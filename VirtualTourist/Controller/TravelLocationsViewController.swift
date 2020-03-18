@@ -18,7 +18,6 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
     
     var annotations = [Pin]()
     var savedPins = [MKPointAnnotation]()
-    var dataController: DataController!
     var fetchedResultsController: NSFetchedResultsController<Pin>!
     var latitude: Double?
     var longitude: Double?
@@ -28,7 +27,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
         let sortDescriptor = NSSortDescriptor(key: "latitude", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
-        if let result = try? dataController.viewContext.fetch(fetchRequest) {
+        if let result = try? DataController.shared.viewContext.fetch(fetchRequest) {
             annotations = result
             for annotation in annotations {
                 let savePin = MKPointAnnotation()
