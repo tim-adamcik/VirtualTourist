@@ -8,17 +8,41 @@
 
 import UIKit
 import MapKit
+import CoreData
 
-class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
+class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
     var annotations = [Pin]()
+    var savedPins = [MKPointAnnotation]()
     var dataController: DataController!
+    var fetchedResultsController: NSFetchedResultsController<Pin>!
     var latitude: Double?
     var longitude: Double?
+    
+    fileprivate func setUpFetchedResultsController() {
+        let fetchRequest: NSFetchRequest<Pin> = Pin.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "latitude", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        if let result = try? dataController.viewContext.fetch(fetchRequest) {
+            annotations = result
+            for annotation in annotations {
+                let savePin = MKPointAnnotation()
+                if let lat = CLLocationDegrees(exactly: annotation.latitude), let lon = CLLocationDegrees(exactly: annotation.longitude) {
+                    let coordinateLocation = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                    savePin.coordinate = coordinateLocation
+                    savePin.title = "Photos"
+                    savedPins.append(savePin)
+                }
+            }
+            mapView.addAnnotations(savedPins)
+        }
+    }
+    
     
     fileprivate func findCurrentLocation() {
         locationManager.requestWhenInUseAuthorization()
@@ -44,6 +68,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate {
          // Do any additional setup after loading the view.
         mapView.delegate = self
         setCenter()
+        setUpFetchedResultsController()
         findCurrentLocation()
         let myLongPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
         myLongPress.addTarget(self, action: #selector(recognizeLongPress(_ :)))

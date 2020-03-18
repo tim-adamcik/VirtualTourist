@@ -24,7 +24,7 @@
             </objects>
             <point key="canvasLocation" x="-812" y="118"/>
         </scene>
-        <!--Travel Locations View Controller-->
+        <!--Virtual Tourist-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController storyboardIdentifier="TravelLocationsViewController" id="BYZ-38-t0r" customClass="TravelLocationsViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
@@ -45,7 +45,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="J2U-oQ-ktF"/>
+                    <navigationItem key="navigationItem" title="Virtual Tourist" id="J2U-oQ-ktF"/>
                     <connections>
                         <outlet property="mapView" destination="1TB-vk-mnl" id="FyK-Cw-8iD"/>
                     </connections>
