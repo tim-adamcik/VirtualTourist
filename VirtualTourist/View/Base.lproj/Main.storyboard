@@ -140,6 +140,7 @@
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="aWa-EK-Tkb" id="NZp-lF-YCS"/>
+                        <outlet property="flowLayout" destination="Ggh-1w-dHo" id="fyc-fJ-pfk"/>
                         <outlet property="newCollectionBtn" destination="ZuX-Na-5h7" id="Zi3-KQ-jkd"/>
                         <outlet property="smallMapView" destination="IPz-zx-04M" id="VPP-Hw-cn2"/>
                     </connections>

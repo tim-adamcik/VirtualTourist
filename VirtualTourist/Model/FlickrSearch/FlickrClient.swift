@@ -13,6 +13,20 @@ class FlickrClient {
     let apiKey = "6e3b5ba678c25366ec2cc02d25f9c363"
     let secret = "9a4a284f7e0d21f7"
     
-    
+    enum Endpoints {
+        case base
+        
+        var url: URL {
+            return URL(string: stringValue)!
+        }
+        
+        var stringValue: String {
+            switch self {
+            case .base:
+                return "https://api.flickr.com/services"
+            }
+        }
+        
+    }
     
 }
