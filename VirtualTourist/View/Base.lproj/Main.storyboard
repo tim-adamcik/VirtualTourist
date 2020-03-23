@@ -35,19 +35,39 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="1TB-vk-mnl">
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                             </mapView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap Pins to Delete" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8A7-EM-qNK">
+                                <rect key="frame" x="100" y="822" width="214" height="40"/>
+                                <color key="backgroundColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="apz-vR-39Z"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstItem="8A7-EM-qNK" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="AmW-dK-5I8"/>
                             <constraint firstItem="1TB-vk-mnl" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="IWA-3f-xmb"/>
                             <constraint firstItem="1TB-vk-mnl" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="MDX-rB-ci3"/>
                             <constraint firstItem="1TB-vk-mnl" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="SWj-dc-6wc"/>
+                            <constraint firstItem="8A7-EM-qNK" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" multiplier="0.516908" id="n10-5M-pp5"/>
+                            <constraint firstItem="8A7-EM-qNK" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nzb-le-5Gg"/>
                             <constraint firstItem="1TB-vk-mnl" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="zd9-HD-REL"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Virtual Tourist" id="J2U-oQ-ktF"/>
+                    <navigationItem key="navigationItem" title="Virtual Tourist" id="J2U-oQ-ktF">
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="JoO-Xs-fkU">
+                            <connections>
+                                <action selector="editBtnPressed:" destination="BYZ-38-t0r" id="QN8-iE-H43"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="1TB-vk-mnl" id="FyK-Cw-8iD"/>
+                        <outlet property="tapPinsToDeleteLabel" destination="8A7-EM-qNK" id="iAl-17-eHq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

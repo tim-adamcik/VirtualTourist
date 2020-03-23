@@ -54,6 +54,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
         collectionView.delegate = self
         collectionView.dataSource = self
         setCenter()
+        _ = FlickrClient.shared.getFlickrPhotos(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
+            if let error = error {
+                DispatchQueue.main.async {
+                    let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
+                    alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+                    self.present(alertVC, animated: true)
+                    print(error.localizedDescription)
+                }
+            } else {
+                if let photos = photos {
+                    FlickrImages.flickrImages = photos.photo
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
+                }
+            }
+        }
         
         // Flow layout
         let space: CGFloat = 3.0

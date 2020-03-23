@@ -13,6 +13,7 @@ import CoreData
 class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var tapPinsToDeleteLabel: UILabel!
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
@@ -65,6 +66,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
     override func viewDidLoad() {
         super.viewDidLoad()
          // Do any additional setup after loading the view.
+        tapPinsToDeleteLabel.isHidden = true
         mapView.delegate = self
         setCenter()
         setUpFetchedResultsController()
@@ -115,5 +117,9 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
         navigationController?.pushViewController(vc, animated: true)
     }
     
+    @IBAction func editBtnPressed(_ sender: Any) {
+        tapPinsToDeleteLabel.isHidden = false
+        
+    }
 }
 
