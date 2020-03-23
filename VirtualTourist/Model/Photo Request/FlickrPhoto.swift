@@ -14,10 +14,6 @@ struct JsonFlickrApi: Codable {
 }
 
 struct FlickrPhotoResponse: Codable {
-    let page: Int
-    let pages: Int
-    let perPage: Int
-    let total: Int
     let photo: [FlickrPhoto]
 }
 

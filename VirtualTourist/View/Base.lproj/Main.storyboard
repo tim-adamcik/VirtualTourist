@@ -59,6 +59,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="J2U-oQ-ktF">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="ANR-3f-Z9B">
+                            <connections>
+                                <action selector="cancelBtnPressed:" destination="BYZ-38-t0r" id="532-xl-6mn"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="JoO-Xs-fkU">
                             <connections>
                                 <action selector="editBtnPressed:" destination="BYZ-38-t0r" id="QN8-iE-H43"/>
@@ -66,6 +71,8 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="cancelBtn" destination="ANR-3f-Z9B" id="NET-66-iAe"/>
+                        <outlet property="editBtn" destination="JoO-Xs-fkU" id="JEl-gD-O2S"/>
                         <outlet property="mapView" destination="1TB-vk-mnl" id="FyK-Cw-8iD"/>
                         <outlet property="tapPinsToDeleteLabel" destination="8A7-EM-qNK" id="iAl-17-eHq"/>
                     </connections>

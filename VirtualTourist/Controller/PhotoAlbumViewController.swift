@@ -21,15 +21,18 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     var currentLatitude: Double?
     var currentLongitude: Double?
     let spacingBetweenItems:CGFloat = 5
+    var flickr = FlickrImages()
+    
     
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 25
+        return FlickrImages.flickrImages.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
+        cell.backgroundColor = .black
         
         return cell
     }
@@ -102,3 +105,10 @@ extension PhotoAlbumViewController: MKMapViewDelegate {
         }
     }
 }
+//
+//// MARK: - Private
+//private extension PhotoAlbumViewController {
+//  func photo(for indexPath: IndexPath) -> FlickrPhoto {
+//    return search[indexPath.section].searchResults[indexPath.row]
+//  }
+//}

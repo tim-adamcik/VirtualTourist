@@ -31,7 +31,8 @@ class FlickrClient {
         let queryItem4 = URLQueryItem(name: "lat", value: String(lat))
         let queryItem5 = URLQueryItem(name: "lon", value: String(lon))
         let queryItem6 = URLQueryItem(name: "radius", value: "10")
-        components.queryItems = [queryItem1, queryItem2, queryItem3, queryItem4, queryItem5, queryItem6]
+        let queryItem7 = URLQueryItem(name: "nojsoncallback", value: "1")
+        components.queryItems = [queryItem1, queryItem2, queryItem3, queryItem4, queryItem5, queryItem6, queryItem7]
         
         guard let url = components.url else {
             completion(nil, NetworkingError.invalidURL)

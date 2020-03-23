@@ -14,6 +14,10 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var tapPinsToDeleteLabel: UILabel!
+    @IBOutlet weak var cancelBtn: UIBarButtonItem!
+    
+    @IBOutlet weak var editBtn: UIBarButtonItem!
+    
     
     fileprivate let locationManager: CLLocationManager = CLLocationManager()
     
@@ -67,6 +71,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
         super.viewDidLoad()
          // Do any additional setup after loading the view.
         tapPinsToDeleteLabel.isHidden = true
+        cancelBtn.isEnabled = false
         mapView.delegate = self
         setCenter()
         setUpFetchedResultsController()
@@ -117,9 +122,27 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
         navigationController?.pushViewController(vc, animated: true)
     }
     
-    @IBAction func editBtnPressed(_ sender: Any) {
-        tapPinsToDeleteLabel.isHidden = false
+//    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView, at indexPath: IndexPath) {
+//        if tapPinsToDeleteLabel.isHidden == false {
+//            let pinToDelete: MKPointAnnotation = MKPointAnnotation()
+//            mapView.removeAnnotation(pinToDelete)
+//
+//            DataController.shared.viewContext.delete(pinToDelete)
+//
+//
+//        }
+//    }
+    
+    @IBAction func cancelBtnPressed(_ sender: Any) {
+        editBtn.isEnabled = true
+        cancelBtn.isEnabled = false
+        tapPinsToDeleteLabel.isHidden = true
         
+    }
+    @IBAction func editBtnPressed(_ sender: Any) {
+        editBtn.isEnabled = false
+        tapPinsToDeleteLabel.isHidden = false
+        cancelBtn.isEnabled = true
     }
 }
 
