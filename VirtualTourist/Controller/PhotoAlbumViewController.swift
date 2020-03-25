@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import MapKit
+import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -21,7 +22,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     var currentLatitude: Double?
     var currentLongitude: Double?
     let spacingBetweenItems:CGFloat = 5
-    var flickr = FlickrImages()
+    var pin: Pin!
+    var flickrPhotos: [FlickrPhoto]? = []
+    var savedImages:  [Photo] = []
     
     
     
@@ -33,6 +36,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
         cell.backgroundColor = .black
+        
         
         return cell
     }
@@ -67,7 +71,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
                 }
             } else {
                 if let photos = photos {
-                    FlickrImages.flickrImages = photos.photo
+                    self.flickrPhotos = photos.photo
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
                     }

@@ -105,10 +105,10 @@
 		BAD6300824187D7100D038E5 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				BAD6300C2419365D00D038E5 /* FlickrViewCell.swift */,
 				BAD62FF524187C8900D038E5 /* Main.storyboard */,
 				BAD62FFB24187C8A00D038E5 /* Assets.xcassets */,
 				BAD62FFD24187C8A00D038E5 /* LaunchScreen.storyboard */,
-				BAD6300C2419365D00D038E5 /* FlickrViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
