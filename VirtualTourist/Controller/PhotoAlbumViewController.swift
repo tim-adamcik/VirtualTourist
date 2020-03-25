@@ -30,13 +30,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return FlickrImages.flickrImages.count
+        return flickrPhotos?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
         cell.backgroundColor = .black
-        
+//        cell.handleImageResponse(imageData: <#T##FlickrPhoto?#>, error: <#T##Error?#>)
         
         return cell
     }
