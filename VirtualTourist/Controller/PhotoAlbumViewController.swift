@@ -23,7 +23,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     var currentLongitude: Double?
     let spacingBetweenItems:CGFloat = 5
     var pin: Pin!
-    var flickrPhotos: [FlickrPhoto]? = []
+    var flickrPhotos: [URL]?
     var savedImages:  [Photo] = []
     
     
@@ -35,9 +35,18 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
-        cell.backgroundColor = .black
-//        cell.handleImageResponse(imageData: <#T##FlickrPhoto?#>, error: <#T##Error?#>)
-        
+        if let desiredArray = flickrPhotos {
+            DispatchQueue.main.async {
+                cell.activityIndicator.isHidden = false
+                cell.activityIndicator.startAnimating()
+                if let dataForImage =  try? Data(contentsOf: desiredArray[indexPath.row]) {
+                    cell.photoImage.image = UIImage(data: dataForImage)
+                    cell.activityIndicator.stopAnimating()
+                } else {
+                    cell.photoImage.image = #imageLiteral(resourceName: "film-reel")
+                }
+            }
+        }
         return cell
     }
     
@@ -61,7 +70,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
         collectionView.delegate = self
         collectionView.dataSource = self
         setCenter()
-        _ = FlickrClient.shared.getFlickrPhotos(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
+        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (urls, error) in
             if let error = error {
                 DispatchQueue.main.async {
                     let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
@@ -70,8 +79,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
                     print(error.localizedDescription)
                 }
             } else {
-                if let photos = photos {
-                    self.flickrPhotos = photos.photo
+                if let urls = urls {
+                    self.flickrPhotos = urls
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
                     }

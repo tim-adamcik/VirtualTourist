@@ -22,9 +22,10 @@ struct FlickrPhoto: Codable {
     let secret: String
     let server: String
     let farm: Int
-    
+ 
     func imageURLString() -> String {
         
         return "https://farm\(farm).staticflickr.com/\(server)/\(id)_\(secret)_q.jpg"
     }
+    
 }

@@ -21,7 +21,7 @@ class FlickrClient {
 
       
     
-    func getFlickrPhotos(lat: Double, lon: Double, completion: @escaping (FlickrPhotoResponse?, Error?) -> Void) {
+    func getFlickrPhotoURLs(lat: Double, lon: Double, completion: @escaping ([URL]?, Error?) -> Void) {
         guard var components = URLComponents(string: flickrBase) else {
             completion(nil, NetworkingError.invalidURLComponents)
             return }
@@ -56,12 +56,22 @@ class FlickrClient {
             do {
                 let responseObject = try decoder.decode(JsonFlickrApi.self, from: data)
                 print(responseObject)
-                completion(responseObject.photos, nil)
+                var tempURLData = [URL]()
+                
+                for i in 0...100 {
+                    let tempPhotos = responseObject.photos.photo
+                    if let urlToAdd: URL = URL(string: tempPhotos[i].imageURLString()) {
+                        tempURLData.append(urlToAdd)
+                    }
+                }
+                completion(tempURLData, nil)
             } catch {
                 completion(nil, error)
             }
         }
         task.resume()
     }
+    
+    
     
 }

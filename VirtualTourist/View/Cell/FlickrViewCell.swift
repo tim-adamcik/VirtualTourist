@@ -11,6 +11,7 @@ import UIKit
 class FlickrViewCell: UICollectionViewCell {
     
     @IBOutlet weak var photoImage: UIImageView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     func setImageFrom(url: URL, placeholderImage: UIImage? = nil, completionHandler: @escaping (UIImage?, Error?) -> Void) {
         
@@ -36,6 +37,7 @@ class FlickrViewCell: UICollectionViewCell {
                }
         setImageFrom(url: imageMessage, placeholderImage: #imageLiteral(resourceName: "film-reel"), completionHandler: handleImageFileResponse(image:error:))
     }
+    
    func handleImageFileResponse(image: UIImage?, error: Error?) {
     
     if let error = error {
