@@ -127,27 +127,20 @@
                                             <rect key="frame" x="0.0" y="0.0" width="135" height="127"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="nh9-TO-CRh">
-                                                    <rect key="frame" x="49" y="45" width="37" height="37"/>
-                                                    <color key="color" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                </activityIndicatorView>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="folder" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="MM6-gf-g7M">
-                                                    <rect key="frame" x="20" y="21" width="95" height="84.5"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qDg-WF-mhY">
+                                                    <rect key="frame" x="0.0" y="0.0" width="135" height="127"/>
                                                 </imageView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="nh9-TO-CRh" firstAttribute="centerX" secondItem="1Py-Xd-gmV" secondAttribute="centerX" id="9EV-Gc-IlK"/>
-                                                <constraint firstItem="MM6-gf-g7M" firstAttribute="top" secondItem="1Py-Xd-gmV" secondAttribute="top" constant="20" id="9bW-gJ-T8t"/>
-                                                <constraint firstItem="nh9-TO-CRh" firstAttribute="centerY" secondItem="1Py-Xd-gmV" secondAttribute="centerY" id="9mf-te-C02"/>
-                                                <constraint firstItem="MM6-gf-g7M" firstAttribute="centerX" secondItem="1Py-Xd-gmV" secondAttribute="centerX" id="DPs-nO-maR"/>
-                                                <constraint firstItem="MM6-gf-g7M" firstAttribute="leading" secondItem="1Py-Xd-gmV" secondAttribute="leading" constant="20" id="JuB-a1-LZM"/>
-                                                <constraint firstItem="MM6-gf-g7M" firstAttribute="centerY" secondItem="1Py-Xd-gmV" secondAttribute="centerY" id="pnw-fI-7Xd"/>
+                                                <constraint firstItem="qDg-WF-mhY" firstAttribute="leading" secondItem="1Py-Xd-gmV" secondAttribute="leading" id="44G-2O-Vjl"/>
+                                                <constraint firstItem="qDg-WF-mhY" firstAttribute="top" secondItem="1Py-Xd-gmV" secondAttribute="top" id="FI7-jF-TaH"/>
+                                                <constraint firstAttribute="trailing" secondItem="qDg-WF-mhY" secondAttribute="trailing" id="iZH-Ro-1BX"/>
+                                                <constraint firstAttribute="bottom" secondItem="qDg-WF-mhY" secondAttribute="bottom" id="pHI-64-5ps"/>
                                             </constraints>
                                         </collectionViewCellContentView>
                                         <size key="customSize" width="135" height="127"/>
                                         <connections>
-                                            <outlet property="activityIndicator" destination="nh9-TO-CRh" id="ITa-5e-7Gv"/>
-                                            <outlet property="photoImage" destination="MM6-gf-g7M" id="a2c-bA-5kG"/>
+                                            <outlet property="photoImage" destination="qDg-WF-mhY" id="jEK-uZ-zN7"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -184,7 +177,4 @@
             <point key="canvasLocation" x="882.60869565217399" y="114.50892857142857"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="folder" catalog="system" width="128" height="95"/>
-    </resources>
 </document>

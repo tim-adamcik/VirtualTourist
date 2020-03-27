@@ -11,7 +11,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class PhotoAlbumViewController: UIViewController {
     
     @IBOutlet weak var smallMapView: MKMapView!
     
@@ -21,55 +21,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
     
     var currentLatitude: Double?
     var currentLongitude: Double?
-    let spacingBetweenItems:CGFloat = 3
     var pin: Pin!
     var flickrPhotos: [URL]?
     var savedImages:  [Photo] = []
     let saveBtn = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: Selector(("saveBtnPressed")))
     let cancelBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: Selector(("cancelBtnPressed")))
-    private let sectionInsets = UIEdgeInsets(top: 50.0,
-                                             left: 20.0,
-                                             bottom: 50.0,
-                                             right: 20.0)
-    private let itemsPerRow: CGFloat = 3
-
-
-    
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return flickrPhotos?.count ?? 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
-        if let desiredArray = flickrPhotos {
-            DispatchQueue.main.async {
-                cell.activityIndicator.isHidden = false
-                cell.activityIndicator.startAnimating()
-                if let dataForImage =  try? Data(contentsOf: desiredArray[indexPath.row]) {
-                    cell.photoImage.image = UIImage(data: dataForImage)
-                } else {
-                    cell.photoImage.image = #imageLiteral(resourceName: "film-reel")
-                }
-                cell.activityIndicator.stopAnimating()
-            }
-        }
-        return cell
-    }
-
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//
-//        let width = UIScreen.main.bounds.width / 3 - spacingBetweenItems
-//        let height = width
-//        return CGSize(width: width, height: height)
-//    }
-//
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//
-//        return spacingBetweenItems
-//    }
-
     
     
     override func viewDidLoad() {
@@ -97,14 +53,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
                 }
             }
         }
-
-//         Flow layout
-//        let space: CGFloat = 3.0
-//        let dimension = (self.view.frame.size.width - (2 * space)) / 3.0
-//
-//        flowLayout.minimumInteritemSpacing = spacingBetweenItems
-//        flowLayout.minimumLineSpacing = spacingBetweenItems
-//        flowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
     
     @objc func saveBtnPressed(sender: UIBarButtonItem) {
@@ -138,31 +86,23 @@ extension PhotoAlbumViewController: MKMapViewDelegate {
     }
 }
 
-// MARK: - Collection View Flow Layout Delegate
-extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout {
-  //1
-  func collectionView(_ collectionView: UICollectionView,
-                      layout collectionViewLayout: UICollectionViewLayout,
-                      sizeForItemAt indexPath: IndexPath) -> CGSize {
-    //2
-    let paddingSpace = sectionInsets.left * (itemsPerRow + 1)
-    let availableWidth = view.frame.width - paddingSpace
-    let widthPerItem = availableWidth / itemsPerRow
+extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
-    return CGSize(width: widthPerItem, height: widthPerItem)
-  }
-  
-  //3
-  func collectionView(_ collectionView: UICollectionView,
-                      layout collectionViewLayout: UICollectionViewLayout,
-                      insetForSectionAt section: Int) -> UIEdgeInsets {
-    return sectionInsets
-  }
-  
-  // 4
-  func collectionView(_ collectionView: UICollectionView,
-                      layout collectionViewLayout: UICollectionViewLayout,
-                      minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-    return sectionInsets.left
-  }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return flickrPhotos?.count ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
+        if let desiredArray = flickrPhotos {
+            cell.setupCell(url: desiredArray[indexPath.row])
+        }
+        return cell
+    }
+    
+    
+    
 }
+
+
+
