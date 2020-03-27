@@ -24,6 +24,7 @@ class PhotoAlbumViewController: UIViewController {
     var pin: Pin!
     var flickrPhotos: [URL]?
     var savedImages:  [Photo] = []
+    let numberOfColumns: CGFloat = 3
     let saveBtn = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: Selector(("saveBtnPressed")))
     let cancelBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: Selector(("cancelBtnPressed")))
     
@@ -100,6 +101,22 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+           let width = collectionView.frame.width / numberOfColumns
+           return CGSize(width: width, height: width)
+       }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+           return .zero
+       }
+       
+       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+           return 0
+       }
+       
+       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+           return 0
+       }
     
     
 }
