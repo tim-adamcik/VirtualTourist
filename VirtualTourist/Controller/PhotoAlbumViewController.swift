@@ -178,12 +178,13 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath)
-        cell?.layer.borderColor = UIColor.clear.cgColor
-        cell?.layer.borderWidth = 3
-        cell?.isSelected = false
+        if selectBtn.isEnabled == false {
+            let cell = collectionView.cellForItem(at: indexPath)
+            cell?.layer.borderColor = UIColor.clear.cgColor
+            cell?.layer.borderWidth = 3
+            cell?.isSelected = false
+        }
     }
-    
     
 }
 
