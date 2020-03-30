@@ -13,11 +13,16 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController {
     
-    @IBOutlet weak var smallMapView: MKMapView!
+    enum Mode {
+        case view
+        case select
+    }
     
+    @IBOutlet weak var smallMapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    
     
     var currentLatitude: Double?
     var currentLongitude: Double?
@@ -25,14 +30,50 @@ class PhotoAlbumViewController: UIViewController {
     var flickrPhotos: [URL]?
     var savedImages:  [Photo] = []
     let numberOfColumns: CGFloat = 3
-    let saveBtn = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: Selector(("saveBtnPressed")))
-    let cancelBtn = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: Selector(("cancelBtnPressed")))
     
+    
+    var mMode: Mode = .view {
+        didSet {
+            switch mMode {
+            case .view:
+                selectBtn.isEnabled = true
+                saveBtn.isEnabled = false
+                navigationItem.leftBarButtonItem = nil
+                collectionView.allowsMultipleSelection = false
+            case .select:
+                selectBtn.isEnabled = false
+                saveBtn.isEnabled = true
+                navigationItem.leftBarButtonItem = cancelBtn
+                collectionView.allowsMultipleSelection = true
+            }
+        }
+    }
+    
+    
+    lazy var selectBtn: UIBarButtonItem = {
+        let barBtnItem = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(selectBtnPressed(_:)))
+        return barBtnItem
+    }()
+    lazy var saveBtn: UIBarButtonItem = {
+        let barBtnItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveBtnPressed(_:)))
+        return barBtnItem
+    }()
+    lazy var cancelBtn: UIBarButtonItem = {
+        let barBtnItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelBtnPressed(_:)))
+        return barBtnItem
+    }()
+    
+    
+    var dictionarySelectedIndexPath: [IndexPath: Bool] = [:]
+    
+    private func setUpBarButtonItems() {
+        navigationItem.rightBarButtonItems = [selectBtn, saveBtn]
+        saveBtn.isEnabled = false
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.rightBarButtonItems = [saveBtn,cancelBtn]
-        cancelBtn.isEnabled = false
+        setUpBarButtonItems()
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -56,13 +97,14 @@ class PhotoAlbumViewController: UIViewController {
         }
     }
     
-    @objc func saveBtnPressed(sender: UIBarButtonItem) {
-        saveBtn.isEnabled = false
-        cancelBtn.isEnabled = true
+    @objc func selectBtnPressed(_ sender: UIBarButtonItem) {
+        mMode = mMode == .view ? .select : .view
     }
-    @objc func cancelBtnPressed(sender: UIBarButtonItem) {
-        saveBtn.isEnabled = true
-        cancelBtn.isEnabled = false
+    @objc func cancelBtnPressed(_ sender: UIBarButtonItem) {
+        mMode = mMode == .select ? .view : .select
+    }
+    @objc func saveBtnPressed(_ sender: UIBarButtonItem) {
+        
     }
     
     
@@ -98,6 +140,13 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
         if let desiredArray = flickrPhotos {
             cell.setupCell(url: desiredArray[indexPath.row])
         }
+        if cell.isSelected {
+            cell.layer.borderColor = UIColor.blue.cgColor
+            cell.layer.borderWidth = 3
+        } else {
+            cell.layer.borderColor = UIColor.clear.cgColor
+            cell.layer.borderWidth = 3
+        }
         return cell
     }
     
@@ -119,16 +168,19 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
        }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath)
-        cell?.layer.borderColor = UIColor.blue.cgColor
-        cell?.layer.borderWidth = 1
-        cell?.isSelected = true
+        if selectBtn.isEnabled == false {
+            let cell = collectionView.cellForItem(at: indexPath)
+            if cell?.isSelected == true {
+                cell?.layer.borderColor = UIColor.blue.cgColor
+                cell?.layer.borderWidth = 3
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath)
         cell?.layer.borderColor = UIColor.clear.cgColor
-        cell?.layer.borderWidth = 1
+        cell?.layer.borderWidth = 3
         cell?.isSelected = false
     }
     
