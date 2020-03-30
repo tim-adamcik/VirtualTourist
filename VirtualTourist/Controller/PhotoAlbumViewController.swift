@@ -32,6 +32,7 @@ class PhotoAlbumViewController: UIViewController {
     let numberOfColumns: CGFloat = 3
     
     
+    
     var mMode: Mode = .view {
         didSet {
             switch mMode {
@@ -39,6 +40,14 @@ class PhotoAlbumViewController: UIViewController {
                 selectBtn.isEnabled = true
                 saveBtn.isEnabled = false
                 navigationItem.leftBarButtonItem = nil
+                if let selectedItems = collectionView.indexPathsForSelectedItems {
+                    for selection in selectedItems {
+                        let cell = collectionView.cellForItem(at: selection)
+                        cell?.layer.borderColor = UIColor.clear.cgColor
+                        cell?.layer.borderWidth = 3
+                        collectionView.deselectItem(at: selection, animated: true)
+                    }
+                }
                 collectionView.allowsMultipleSelection = false
             case .select:
                 selectBtn.isEnabled = false
@@ -77,6 +86,7 @@ class PhotoAlbumViewController: UIViewController {
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
+
         setCenter()
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (urls, error) in
             if let error = error {
@@ -103,6 +113,7 @@ class PhotoAlbumViewController: UIViewController {
     @objc func cancelBtnPressed(_ sender: UIBarButtonItem) {
         mMode = mMode == .select ? .view : .select
     }
+    
     @objc func saveBtnPressed(_ sender: UIBarButtonItem) {
         
     }
@@ -130,6 +141,7 @@ extension PhotoAlbumViewController: MKMapViewDelegate {
 }
 
 extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return flickrPhotos?.count ?? 0
@@ -173,6 +185,7 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
             if cell?.isSelected == true {
                 cell?.layer.borderColor = UIColor.blue.cgColor
                 cell?.layer.borderWidth = 3
+                dictionarySelectedIndexPath[indexPath] = true
             }
         }
     }
@@ -183,6 +196,7 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
             cell?.layer.borderColor = UIColor.clear.cgColor
             cell?.layer.borderWidth = 3
             cell?.isSelected = false
+            dictionarySelectedIndexPath[indexPath] = false
         }
     }
     
