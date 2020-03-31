@@ -28,8 +28,10 @@ class PhotoAlbumViewController: UIViewController {
     var currentLongitude: Double?
     var pin: Pin!
     var flickrPhotos: [URL]?
+    var collectionImages: [UIImage]?
     var savedImages:  [Photo] = []
     let numberOfColumns: CGFloat = 3
+    var fetchedResultsController: NSFetchedResultsController<Photo>
     
     
     
@@ -48,6 +50,7 @@ class PhotoAlbumViewController: UIViewController {
                         collectionView.deselectItem(at: selection, animated: true)
                     }
                 }
+                dictionarySelectedIndexPath.removeAll()
                 collectionView.allowsMultipleSelection = false
             case .select:
                 selectBtn.isEnabled = false
@@ -114,7 +117,29 @@ class PhotoAlbumViewController: UIViewController {
         mMode = mMode == .select ? .view : .select
     }
     
-    @objc func saveBtnPressed(_ sender: UIBarButtonItem) {
+    @objc func saveBtnPressed(_ sender: UIBarButtonItem, data: Data) {
+        let desiredURLs = flickrPhotos
+        if let selectedItems = collectionView.indexPathsForSelectedItems {
+            if selectedItems.count > 0, dictionarySelectedIndexPath.count > 0 {
+                for selection in selectedItems {
+                    let cell = collectionView.cellForItem(at: selection) as! FlickrViewCell
+                    let data = cell.photoImage.image?.pngData()
+                    let urlString =
+                    
+                    
+                    let photo = Photo(context: DataController.shared.viewContext)
+                    photo.imageData = data
+                    photo.imageURL =
+                    photo.index
+                    photo.pin = pin
+                    savedImages.append(photo)
+                    //        DataController.shared.save()
+                }
+              
+            }
+            
+        }
+        
         
     }
     
@@ -152,6 +177,10 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
         if let desiredArray = flickrPhotos {
             cell.setupCell(url: desiredArray[indexPath.row])
         }
+        if let cellImage = cell.photoImage.image {
+            collectionImages?.append(cellImage)
+        }
+        
         if cell.isSelected {
             cell.layer.borderColor = UIColor.blue.cgColor
             cell.layer.borderWidth = 3
