@@ -28,12 +28,12 @@ class PhotoAlbumViewController: UIViewController {
     var currentLongitude: Double?
     var pin: Pin!
     var flickrPhotos: [URL]?
-    var collectionImages: [UIImage]?
+    var collectionImages: [FlickrPhoto]? = []
     var savedImages:  [Photo] = []
     let numberOfColumns: CGFloat = 3
-    var fetchedResultsController: NSFetchedResultsController<Photo>
+//    var fetchedResultsController: NSFetchedResultsController<Photo>
     
-    
+    var copiedFlickrObjectArray: FlickrClient = FlickrClient()
     
     var mMode: Mode = .view {
         didSet {
@@ -85,6 +85,8 @@ class PhotoAlbumViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let copiedFlickrObjectArray: FlickrClient = FlickrClient()
+        collectionImages = copiedFlickrObjectArray.flickrObjects
         setUpBarButtonItems()
         smallMapView.delegate = self
         collectionView.delegate = self
@@ -117,20 +119,21 @@ class PhotoAlbumViewController: UIViewController {
         mMode = mMode == .select ? .view : .select
     }
     
-    @objc func saveBtnPressed(_ sender: UIBarButtonItem, data: Data) {
-        let desiredURLs = flickrPhotos
+    @objc func saveBtnPressed(_ sender: UIBarButtonItem) {
+        
         if let selectedItems = collectionView.indexPathsForSelectedItems {
             if selectedItems.count > 0, dictionarySelectedIndexPath.count > 0 {
                 for selection in selectedItems {
+                    var i = 0
                     let cell = collectionView.cellForItem(at: selection) as! FlickrViewCell
                     let data = cell.photoImage.image?.pngData()
-                    let urlString =
                     
+                    let imageURLString = collectionImages?[i].imageURLString()
+                    i += 1
                     
                     let photo = Photo(context: DataController.shared.viewContext)
                     photo.imageData = data
-                    photo.imageURL =
-                    photo.index
+                    photo.imageURL = imageURLString
                     photo.pin = pin
                     savedImages.append(photo)
                     //        DataController.shared.save()
@@ -177,9 +180,7 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
         if let desiredArray = flickrPhotos {
             cell.setupCell(url: desiredArray[indexPath.row])
         }
-        if let cellImage = cell.photoImage.image {
-            collectionImages?.append(cellImage)
-        }
+
         
         if cell.isSelected {
             cell.layer.borderColor = UIColor.blue.cgColor

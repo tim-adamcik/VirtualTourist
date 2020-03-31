@@ -18,6 +18,7 @@ class FlickrClient {
     var flickrBase = "https://api.flickr.com/services/rest/"
     var flickrSearch = "flickr.photos.search"
            
+    var flickrObjects: [FlickrPhoto] = []
 
       
     
@@ -60,6 +61,7 @@ class FlickrClient {
                 
                 for i in 0...100 {
                     let tempPhotos = responseObject.photos.photo
+                    self.flickrObjects = tempPhotos
                     if let urlToAdd: URL = URL(string: tempPhotos[i].imageURLString()) {
                         tempURLData.append(urlToAdd)
                     }
