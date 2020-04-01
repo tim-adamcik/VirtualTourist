@@ -102,7 +102,11 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifer)
             view!.canShowCallout = true
-            view!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            if tapPinsToDeleteLabel.isHidden == true {
+                view!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            } else {
+                view!.rightCalloutAccessoryView = UIButton(type: .close)
+            }
             return view
         } else {
             view!.annotation = annotation
@@ -111,27 +115,31 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        let vc = storyboard?.instantiateViewController(identifier: "PhotoAlbumViewController") as! PhotoAlbumViewController
-        let locationLat = view.annotation?.coordinate.latitude
-        let locationLon = view.annotation?.coordinate.longitude
-        let myCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: locationLat!, longitude: locationLon!)
-        let selectedPin: MKPointAnnotation = MKPointAnnotation()
-        selectedPin.coordinate = myCoordinate
-        vc.currentLatitude = myCoordinate.latitude
-        vc.currentLongitude = myCoordinate.longitude
-        navigationController?.pushViewController(vc, animated: true)
+        
+        if tapPinsToDeleteLabel.isHidden == true {
+            let vc = storyboard?.instantiateViewController(identifier: "PhotoAlbumViewController") as! PhotoAlbumViewController
+            let locationLat = view.annotation?.coordinate.latitude
+            let locationLon = view.annotation?.coordinate.longitude
+            let myCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: locationLat!, longitude: locationLon!)
+            let selectedPin: MKPointAnnotation = MKPointAnnotation()
+            selectedPin.coordinate = myCoordinate
+            vc.currentLatitude = myCoordinate.latitude
+            vc.currentLongitude = myCoordinate.longitude
+            navigationController?.pushViewController(vc, animated: true)
+        } else {
+            let pinToDelete: MKPointAnnotation = MKPointAnnotation() 
+            mapView.removeAnnotation(pinToDelete)
+            
+            
+        }
     }
-    
-//    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView, at indexPath: IndexPath) {
-//        if tapPinsToDeleteLabel.isHidden == false {
-//            let pinToDelete: MKPointAnnotation = MKPointAnnotation()
-//            mapView.removeAnnotation(pinToDelete)
-//
-//            DataController.shared.viewContext.delete(pinToDelete)
-//
-//
-//        }
-//    }
+    //Deletes annotation from coredata and mapview
+    func deleteAnnotation(at indexPath: IndexPath) {
+        let annotationToDelete = fetchedResultsController.object(at: indexPath)
+        DataController.shared.viewContext.delete(annotationToDelete)
+        DataController.shared.save()
+        
+    }
     
     @IBAction func cancelBtnPressed(_ sender: Any) {
         editBtn.isEnabled = true

@@ -136,14 +136,12 @@ class PhotoAlbumViewController: UIViewController {
                     photo.imageURL = imageURLString
                     photo.pin = pin
                     savedImages.append(photo)
-                    //        DataController.shared.save()
+                    DataController.shared.save()
                 }
               
             }
             
         }
-        
-        
     }
     
     
