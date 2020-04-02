@@ -27,12 +27,23 @@ class PhotoAlbumViewController: UIViewController {
     var currentLatitude: Double?
     var currentLongitude: Double?
     var pin: Pin!
+    var savedPhotoObjects = [Photo]()
     var flickrPhotos: [FlickrPhoto] = []
     let numberOfColumns: CGFloat = 3
+    var fetchedResultsController: NSFetchedResultsController<Photo>!
     
-    
-//    var fetchedResultsController: NSFetchedResultsController<Photo>
-   
+    fileprivate func setUpFetchedResultsController() {
+        var fetchedRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "imageURL", ascending: true)
+        fetchedRequest.sortDescriptors = [sortDescriptor]
+        
+        if let result = try? DataController.shared.viewContext.fetch(fetchedRequest) {
+            savedPhotoObjects = result
+            for photoObject in savedPhotoObjects {
+                let photo = UIImage()
+            }
+        }
+    }
     
     var mMode: Mode = .view {
         didSet {
