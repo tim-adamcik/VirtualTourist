@@ -102,11 +102,7 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
         if view == nil {
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifer)
             view!.canShowCallout = true
-            if tapPinsToDeleteLabel.isHidden == true {
-                view!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-            } else {
-                view!.rightCalloutAccessoryView = UIButton(type: .close)
-            }
+            view!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
             return view
         } else {
             view!.annotation = annotation
@@ -126,19 +122,24 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
             vc.currentLatitude = myCoordinate.latitude
             vc.currentLongitude = myCoordinate.longitude
             navigationController?.pushViewController(vc, animated: true)
-        } else {
-            let pinToDelete: MKPointAnnotation = MKPointAnnotation() 
-            mapView.removeAnnotation(pinToDelete)
-            
-            
         }
     }
     //Deletes annotation from coredata and mapview
-    func deleteAnnotation(at indexPath: IndexPath) {
-        let annotationToDelete = fetchedResultsController.object(at: indexPath)
-        DataController.shared.viewContext.delete(annotationToDelete)
-        DataController.shared.save()
-        
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+            
+        if editBtn.isEnabled == false {
+            let selectedAnnotation = view.annotation as? MKPointAnnotation
+            
+            for pin in annotations {
+                if pin.latitude == selectedAnnotation?.coordinate.latitude &&
+                   pin.longitude == selectedAnnotation?.coordinate.longitude {
+                    mapView.removeAnnotation(selectedAnnotation as! MKAnnotation)
+                    DataController.shared.viewContext.delete(pin)
+                    DataController.shared.save()
+                }
+            }
+        }
     }
     
     @IBAction func cancelBtnPressed(_ sender: Any) {
