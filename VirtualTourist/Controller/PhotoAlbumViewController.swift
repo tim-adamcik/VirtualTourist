@@ -27,13 +27,12 @@ class PhotoAlbumViewController: UIViewController {
     var currentLatitude: Double?
     var currentLongitude: Double?
     var pin: Pin!
-    var flickrPhotos: [URL]?
-    var collectionImages: [FlickrPhoto]? = []
-    var savedImages:  [Photo] = []
+    var flickrPhotos: [FlickrPhoto] = []
     let numberOfColumns: CGFloat = 3
-//    var fetchedResultsController: NSFetchedResultsController<Photo>
     
-    var copiedFlickrObjectArray: FlickrClient = FlickrClient()
+    
+//    var fetchedResultsController: NSFetchedResultsController<Photo>
+   
     
     var mMode: Mode = .view {
         didSet {
@@ -50,7 +49,6 @@ class PhotoAlbumViewController: UIViewController {
                         collectionView.deselectItem(at: selection, animated: true)
                     }
                 }
-                dictionarySelectedIndexPath.removeAll()
                 collectionView.allowsMultipleSelection = false
             case .select:
                 selectBtn.isEnabled = false
@@ -76,7 +74,7 @@ class PhotoAlbumViewController: UIViewController {
     }()
     
     
-    var dictionarySelectedIndexPath: [IndexPath: Bool] = [:]
+   
     
     private func setUpBarButtonItems() {
         navigationItem.rightBarButtonItems = [selectBtn, saveBtn]
@@ -85,15 +83,13 @@ class PhotoAlbumViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let copiedFlickrObjectArray: FlickrClient = FlickrClient()
-        collectionImages = copiedFlickrObjectArray.flickrObjects
         setUpBarButtonItems()
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
 
         setCenter()
-        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (urls, error) in
+        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
             if let error = error {
                 DispatchQueue.main.async {
                     let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
@@ -102,8 +98,8 @@ class PhotoAlbumViewController: UIViewController {
                     print(error.localizedDescription)
                 }
             } else {
-                if let urls = urls {
-                    self.flickrPhotos = urls
+                if let photos = photos {
+                    self.flickrPhotos = photos
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
                     }
@@ -111,6 +107,7 @@ class PhotoAlbumViewController: UIViewController {
             }
         }
     }
+    
     
     @objc func selectBtnPressed(_ sender: UIBarButtonItem) {
         mMode = mMode == .view ? .select : .view
@@ -121,28 +118,20 @@ class PhotoAlbumViewController: UIViewController {
     
     @objc func saveBtnPressed(_ sender: UIBarButtonItem) {
         
-        if let selectedItems = collectionView.indexPathsForSelectedItems {
-            if selectedItems.count > 0, dictionarySelectedIndexPath.count > 0 {
-                for selection in selectedItems {
-                    var i = 0
-                    let cell = collectionView.cellForItem(at: selection) as! FlickrViewCell
-                    let data = cell.photoImage.image?.pngData()
-                    
-                    let imageURLString = collectionImages?[i].imageURLString()
-                    i += 1
-                    
+        if let selectedIndexPaths = collectionView.indexPathsForSelectedItems {
+                for indexPath in selectedIndexPaths {
+                    let flickrPhoto = flickrPhotos[indexPath.row]
                     let photo = Photo(context: DataController.shared.viewContext)
-                    photo.imageData = data
-                    photo.imageURL = imageURLString
+                    if let url = URL(string: flickrPhoto.imageURLString()) {
+                      photo.imageData = try? Data(contentsOf: url)
+                    }
+                    photo.imageURL = flickrPhoto.imageURLString()
                     photo.pin = pin
-                    savedImages.append(photo)
                     DataController.shared.save()
                 }
-              
             }
-            
         }
-    }
+    
     
     
     @IBAction func newCollectionBtnPressed(_ sender: Any) {
@@ -170,16 +159,14 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return flickrPhotos?.count ?? 0
+        return flickrPhotos.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
-        if let desiredArray = flickrPhotos {
-            cell.setupCell(url: desiredArray[indexPath.row])
+        if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
+            cell.setupCell(url: url)
         }
-
-        
         if cell.isSelected {
             cell.layer.borderColor = UIColor.blue.cgColor
             cell.layer.borderWidth = 3
@@ -213,7 +200,6 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
             if cell?.isSelected == true {
                 cell?.layer.borderColor = UIColor.blue.cgColor
                 cell?.layer.borderWidth = 3
-                dictionarySelectedIndexPath[indexPath] = true
             }
         }
     }
@@ -224,7 +210,6 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
             cell?.layer.borderColor = UIColor.clear.cgColor
             cell?.layer.borderWidth = 3
             cell?.isSelected = false
-            dictionarySelectedIndexPath[indexPath] = false
         }
     }
     
