@@ -33,17 +33,14 @@ class PhotoAlbumViewController: UIViewController {
     var fetchedResultsController: NSFetchedResultsController<Photo>!
     
     fileprivate func setUpFetchedResultsController() {
-        var fetchedRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+        let fetchedRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "imageURL", ascending: true)
         fetchedRequest.sortDescriptors = [sortDescriptor]
         
         if let result = try? DataController.shared.viewContext.fetch(fetchedRequest) {
             savedPhotoObjects = result
-            for photoObject in savedPhotoObjects {
-                let photo = UIImage()
             }
         }
-    }
     
     var mMode: Mode = .view {
         didSet {
@@ -98,6 +95,7 @@ class PhotoAlbumViewController: UIViewController {
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
+        setUpFetchedResultsController()
 
         setCenter()
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
@@ -175,18 +173,25 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
-        if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
-            cell.setupCell(url: url)
+        if savedPhotoObjects.count > 0 {
+            for photoObject in savedPhotoObjects {
+                if let image = UIImage(data: photoObject.imageData!) {
+                    cell.photoImage.image = image
+                }
+            }
         }
-        if cell.isSelected {
-            cell.layer.borderColor = UIColor.blue.cgColor
-            cell.layer.borderWidth = 3
-        } else {
-            cell.layer.borderColor = UIColor.clear.cgColor
-            cell.layer.borderWidth = 3
+            if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
+                cell.setupCell(url: url)
+            }
+            if cell.isSelected {
+                cell.layer.borderColor = UIColor.blue.cgColor
+                cell.layer.borderWidth = 3
+            } else {
+                cell.layer.borderColor = UIColor.clear.cgColor
+                cell.layer.borderWidth = 3
+            }
+            return cell
         }
-        return cell
-    }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
            let width = collectionView.frame.width / numberOfColumns
