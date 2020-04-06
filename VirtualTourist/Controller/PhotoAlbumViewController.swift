@@ -183,8 +183,10 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
         if savedPhotoObjects.count > 0 {
              let photoObject = savedPhotoObjects[indexPath.row]
-                let image = UIImage(data: photoObject.imageData!)
-                    cell.photoImage.image = image
+            DispatchQueue.main.async {
+                let image = UIImage(data: photoObject.imageData! as Data)
+                cell.photoImage.image = image
+            }
     }
             if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
                 cell.setupCell(url: url)
