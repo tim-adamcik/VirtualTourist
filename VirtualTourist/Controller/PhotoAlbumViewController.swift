@@ -49,7 +49,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
             case .view:
                 selectBtn.isEnabled = true
                 saveBtn.isEnabled = false
-                navigationItem.leftBarButtonItem = nil
+                navigationItem.leftBarButtonItems = nil
                 if let selectedItems = collectionView.indexPathsForSelectedItems {
                     for selection in selectedItems {
                         let cell = collectionView.cellForItem(at: selection)
@@ -62,7 +62,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
             case .select:
                 selectBtn.isEnabled = false
                 saveBtn.isEnabled = true
-                navigationItem.leftBarButtonItem = cancelBtn
+                navigationItem.leftBarButtonItems = [cancelBtn, deleteBtn]
                 collectionView.allowsMultipleSelection = true
             }
         }
@@ -81,9 +81,11 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         let barBtnItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelBtnPressed(_:)))
         return barBtnItem
     }()
+    lazy var deleteBtn: UIBarButtonItem = {
+        let barBtnItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteBtnPressed(_:)))
+        return barBtnItem
+    }()
     
-    
-   
     
     private func setUpBarButtonItems() {
         navigationItem.rightBarButtonItems = [selectBtn, saveBtn]
@@ -149,7 +151,19 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
             }
         }
     
-    
+    @objc func deleteBtnPressed(_ sender: UIBarButtonItem) {
+        if let selectedIndexPaths = collectionView.indexPathsForSelectedItems {
+            for indexPath in selectedIndexPaths {
+                let flickrPhoto = flickrPhotos[indexPath.row]
+                for photo in savedPhotoObjects {
+                    if photo.imageURL == flickrPhoto.imageURLString() {
+                        DataController.shared.viewContext.delete(photo)
+                       try? DataController.shared.viewContext.save()
+                    }
+                }
+            }
+        }
+    }
     
     @IBAction func newCollectionBtnPressed(_ sender: Any) {
     }
@@ -176,31 +190,37 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return flickrPhotos.count
+        
+        return flickrPhotos.count + savedPhotoObjects.count
     }
+    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
-        if savedPhotoObjects.count > 0 {
-             let photoObject = savedPhotoObjects[indexPath.row]
+        
+        if indexPath.row < savedPhotoObjects.count {
+            let photoObject = savedPhotoObjects[indexPath.row]
             DispatchQueue.main.async {
                 let image = UIImage(data: photoObject.imageData! as Data)
                 cell.photoImage.image = image
             }
-    }
+        } else {
             if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
                 cell.setupCell(url: url)
             }
-            if cell.isSelected {
-                cell.layer.borderColor = UIColor.blue.cgColor
-                cell.layer.borderWidth = 3
-            } else {
-                cell.layer.borderColor = UIColor.clear.cgColor
-                cell.layer.borderWidth = 3
-            }
-            return cell
         }
-    
+        
+        if cell.isSelected {
+            cell.layer.borderColor = UIColor.blue.cgColor
+            cell.layer.borderWidth = 3
+        } else {
+            cell.layer.borderColor = UIColor.clear.cgColor
+            cell.layer.borderWidth = 3
+        }
+        
+        return cell
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
            let width = collectionView.frame.width / numberOfColumns
            return CGSize(width: width, height: width)
