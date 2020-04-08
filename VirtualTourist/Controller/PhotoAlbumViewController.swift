@@ -32,16 +32,22 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     let numberOfColumns: CGFloat = 3
     var fetchedResultsController: NSFetchedResultsController<Photo>!
     
-    fileprivate func setUpFetchedResultsController() {
-        let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "imageURL", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-      
-        
-        if let result = try? DataController.shared.viewContext.fetch(fetchRequest) {
-            savedPhotoObjects = result
-            }
+    fileprivate func reloadSavedData() {
+        if fetchedResultsController == nil {
+            let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+            let sortDescriptor = NSSortDescriptor(key: "imageURL", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescriptor]
+            
+            fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DataController.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+            fetchedResultsController.delegate = self
         }
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            print("error performing fetch")
+        }
+    }
+    
     
     var mMode: Mode = .view {
         didSet {
@@ -98,7 +104,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
-        setUpFetchedResultsController()
+        reloadSavedData()
 
         setCenter()
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
@@ -190,26 +196,33 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return flickrPhotos.count + savedPhotoObjects.count
+        switch section {
+        case 0:
+            return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        default:
+            return flickrPhotos.count
+        }
     }
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
+    }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
         
-        if indexPath.row < savedPhotoObjects.count {
-            let photoObject = savedPhotoObjects[indexPath.row]
+        switch indexPath.section {
+        case 0:
+            let photoObject = fetchedResultsController.object(at: indexPath)
             DispatchQueue.main.async {
                 let image = UIImage(data: photoObject.imageData! as Data)
                 cell.photoImage.image = image
             }
-        } else {
+        default:
             if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
                 cell.setupCell(url: url)
             }
         }
-        
         if cell.isSelected {
             cell.layer.borderColor = UIColor.blue.cgColor
             cell.layer.borderWidth = 3
@@ -217,9 +230,8 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
             cell.layer.borderColor = UIColor.clear.cgColor
             cell.layer.borderWidth = 3
         }
-        
-        return cell
-    }
+    return cell
+}
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
            let width = collectionView.frame.width / numberOfColumns
