@@ -21,8 +21,8 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     @IBOutlet weak var smallMapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var newCollectionBtn: UIButton!
-    @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
-    
+    @IBOutlet weak var flowLayout: UICollectionViewFlowLayout! 
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var currentLatitude: Double?
     var currentLongitude: Double?
@@ -111,9 +111,12 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         reloadSavedData()
         
         setCenter()
+        activityIndicator.startAnimating()
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
+        
             if let error = error {
                 DispatchQueue.main.async {
+                    self.activityIndicator.stopAnimating()
                     let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
                     alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
                     self.present(alertVC, animated: true)
@@ -123,6 +126,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
                 if let photos = photos {
                     self.flickrPhotos = photos
                     DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
                         self.collectionView.reloadData()
                     }
                 }
@@ -162,6 +166,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         }
     
     @objc func deleteBtnPressed(_ sender: UIBarButtonItem) {
+        
         if let selectedIndexPaths = collectionView.indexPathsForSelectedItems {
             for indexPath in selectedIndexPaths {
                 let savedPhoto = fetchedResultsController.object(at: indexPath)

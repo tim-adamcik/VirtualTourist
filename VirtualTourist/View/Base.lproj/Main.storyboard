@@ -119,6 +119,10 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <activityIndicatorView key="backgroundView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" id="AKD-lA-m4Y">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="550"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" restorationIdentifier="FlickrViewCell" reuseIdentifier="FlickrViewCell" id="MZh-kn-rip" customClass="FlickrViewCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
@@ -162,6 +166,7 @@
                         <viewLayoutGuide key="safeArea" id="kCu-eR-LNe"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="AKD-lA-m4Y" id="d47-gy-vZI"/>
                         <outlet property="collectionView" destination="PTX-Jg-Q3Z" id="N7K-Bo-jrY"/>
                         <outlet property="flowLayout" destination="DRn-ON-ToA" id="CKt-6K-ipa"/>
                         <outlet property="newCollectionBtn" destination="ZuX-Na-5h7" id="Zi3-KQ-jkd"/>
