@@ -31,10 +31,13 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     var flickrPhotos: [FlickrPhoto] = []
     let numberOfColumns: CGFloat = 3
     var fetchedResultsController: NSFetchedResultsController<Photo>!
+
     
     fileprivate func reloadSavedData() {
         if fetchedResultsController == nil {
             let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+            let predicate = NSPredicate(format: "pin == %@", argumentArray: [pin!])
+            fetchRequest.predicate = predicate
             let sortDescriptor = NSSortDescriptor(key: "imageURL", ascending: true)
             fetchRequest.sortDescriptors = [sortDescriptor]
             
@@ -105,7 +108,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
-       reloadSavedData()
+        reloadSavedData()
         
         setCenter()
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
