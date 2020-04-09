@@ -176,6 +176,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     }
     
     @IBAction func newCollectionBtnPressed(_ sender: Any) {
+        collectionView.reloadData()
     }
 }
 
@@ -223,7 +224,8 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
                 cell.photoImage.image = image
             }
         default:
-            if let url = URL(string: flickrPhotos[indexPath.row].imageURLString()) {
+            let shuffledFlickrPhotos = flickrPhotos.shuffled()
+            if let url = URL(string: shuffledFlickrPhotos[indexPath.row].imageURLString()) {
                 cell.setupCell(url: url)
             }
         }
