@@ -164,9 +164,9 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     @objc func deleteBtnPressed(_ sender: UIBarButtonItem) {
         if let selectedIndexPaths = collectionView.indexPathsForSelectedItems {
             for indexPath in selectedIndexPaths {
-                let flickrPhoto = flickrPhotos[indexPath.row]
-                for photo in savedPhotoObjects {
-                    if photo.imageURL == flickrPhoto.imageURLString() {
+                let savedPhoto = fetchedResultsController.object(at: indexPath)
+                for photo in fetchedResultsController.fetchedObjects! {
+                    if photo.imageURL == savedPhoto.imageURL {
                         DataController.shared.viewContext.delete(photo)
                        try? DataController.shared.viewContext.save()
                     }
