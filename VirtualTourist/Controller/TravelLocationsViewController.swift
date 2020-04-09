@@ -119,9 +119,16 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
             let myCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: locationLat!, longitude: locationLon!)
             let selectedPin: MKPointAnnotation = MKPointAnnotation()
             selectedPin.coordinate = myCoordinate
-            vc.currentLatitude = myCoordinate.latitude
-            vc.currentLongitude = myCoordinate.longitude
-            navigationController?.pushViewController(vc, animated: true)
+            
+            for pin in annotations {
+                if pin.latitude == selectedPin.coordinate.latitude &&
+                    pin.longitude == selectedPin.coordinate.longitude {
+                    vc.pin = pin
+                }
+                vc.currentLatitude = pin.latitude
+                vc.currentLongitude = pin.longitude
+            }
+                navigationController?.pushViewController(vc, animated: true)
         }
     }
     //Deletes annotation from coredata and mapview

@@ -38,6 +38,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
             let sortDescriptor = NSSortDescriptor(key: "imageURL", ascending: true)
             fetchRequest.sortDescriptors = [sortDescriptor]
             
+            
             fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DataController.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
             fetchedResultsController.delegate = self
         }
@@ -104,8 +105,8 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
-        reloadSavedData()
-
+       reloadSavedData()
+        
         setCenter()
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
             if let error = error {
