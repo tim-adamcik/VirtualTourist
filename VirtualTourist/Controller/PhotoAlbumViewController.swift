@@ -58,7 +58,6 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
             switch mMode {
             case .view:
                 selectBtn.isEnabled = true
-                saveBtn.isEnabled = false
                 navigationItem.leftBarButtonItems = nil
                 if let selectedItems = collectionView.indexPathsForSelectedItems {
                     for selection in selectedItems {
@@ -71,7 +70,6 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
                 collectionView.allowsMultipleSelection = false
             case .select:
                 selectBtn.isEnabled = false
-                saveBtn.isEnabled = true
                 navigationItem.leftBarButtonItems = [cancelBtn, deleteBtn]
                 collectionView.allowsMultipleSelection = true
             }
@@ -83,10 +81,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         let barBtnItem = UIBarButtonItem(title: "Select", style: .plain, target: self, action: #selector(selectBtnPressed(_:)))
         return barBtnItem
     }()
-    lazy var saveBtn: UIBarButtonItem = {
-        let barBtnItem = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveBtnPressed(_:)))
-        return barBtnItem
-    }()
+
     lazy var cancelBtn: UIBarButtonItem = {
         let barBtnItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelBtnPressed(_:)))
         return barBtnItem
@@ -98,8 +93,31 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     
     
     private func setUpBarButtonItems() {
-        navigationItem.rightBarButtonItems = [selectBtn, saveBtn]
-        saveBtn.isEnabled = false
+        navigationItem.rightBarButtonItem = selectBtn
+    }
+    
+    fileprivate func getFlickrPhotos() {
+        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
+            
+            if let error = error {
+                DispatchQueue.main.async {
+                    self.activityIndicator.stopAnimating()
+                    let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
+                    alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+                    self.present(alertVC, animated: true)
+                    print(error.localizedDescription)
+                }
+            } else {
+                if let photos = photos {
+                    self.flickrPhotos = photos
+                    self.saveToCoreData(photos: photos)
+                    DispatchQueue.main.async {
+                        self.activityIndicator.stopAnimating()
+                        self.collectionView.reloadData()
+                    }
+                }
+            }
+        }
     }
     
     override func viewDidLoad() {
@@ -112,26 +130,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         
         setCenter()
         activityIndicator.startAnimating()
-        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
-        
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.activityIndicator.stopAnimating()
-                    let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
-                    alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
-                    self.present(alertVC, animated: true)
-                    print(error.localizedDescription)
-                }
-            } else {
-                if let photos = photos {
-                    self.flickrPhotos = photos
-                    DispatchQueue.main.async {
-                        self.activityIndicator.stopAnimating()
-                        self.collectionView.reloadData()
-                    }
-                }
-            }
-        }
+        getFlickrPhotos()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -149,20 +148,19 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         newCollectionBtn.isEnabled = true
     }
     
-    @objc func saveBtnPressed(_ sender: UIBarButtonItem) {
+    func saveToCoreData(photos: [FlickrPhoto]) {
         
-        if let selectedIndexPaths = collectionView.indexPathsForSelectedItems {
-                for indexPath in selectedIndexPaths {
-                    let flickrPhoto = flickrPhotos[indexPath.row]
+                for flickrPhoto in photos {
                     let photo = Photo(context: DataController.shared.viewContext)
                     if let url = URL(string: flickrPhoto.imageURLString()) {
                       photo.imageData = try? Data(contentsOf: url)
                     }
                     photo.imageURL = flickrPhoto.imageURLString()
                     photo.pin = pin
+                    savedPhotoObjects.append(photo)
                     DataController.shared.save()
                 }
-            }
+            
         }
     
     @objc func deleteBtnPressed(_ sender: UIBarButtonItem) {

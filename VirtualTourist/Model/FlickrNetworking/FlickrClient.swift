@@ -55,6 +55,7 @@ class FlickrClient {
                 let responseObject = try decoder.decode(JsonFlickrApi.self, from: data)
                 print(responseObject)
                 
+                
                 let photos = Array(responseObject.photos.photo.prefix(100))
                 completion(photos, nil)
             } catch {
