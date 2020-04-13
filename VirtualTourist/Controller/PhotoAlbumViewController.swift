@@ -61,7 +61,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         }
     }
     
-    
+
     var mMode: Mode = .view {
         didSet {
             switch mMode {
@@ -118,11 +118,14 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
                 }
             } else {
                 if let photos = photos {
-                    self.flickrPhotos = photos
-                    self.saveToCoreData(photos: photos)
+                    
                     DispatchQueue.main.async {
+                        self.flickrPhotos = photos
+                        self.saveToCoreData(photos: photos)
                         self.activityIndicator.stopAnimating()
                         self.collectionView.reloadData()
+                        self.savedPhotoObjects = self.reloadSavedData()!
+                        self.showSavedResult()
                     }
                 }
             }
@@ -135,16 +138,20 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         smallMapView.delegate = self
         collectionView.delegate = self
         collectionView.dataSource = self
-        reloadSavedData()
+        
+        //reload saved data
+        let savedPhotos = reloadSavedData()
+        if savedPhotos != nil && savedPhotos?.count != 0 {
+            savedPhotoObjects = savedPhotos!
+            showSavedResult()
+        } else {
+            showNewResult()
+        }
         
         setCenter()
         activityIndicator.startAnimating()
         
-        if pin.photo != nil  {
-            savedPhotoObjects = pin.photo!.allObjects as? [Photo] ?? []
-        } else {
-            getFlickrPhotos()
-        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -176,6 +183,30 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
                 }
             
         }
+ 
+    
+    func deleteExistingCoreDataPhoto() {
+        
+        for image in savedPhotoObjects {
+            
+            DataController.shared.viewContext.delete(image)
+        }
+    }
+    
+    func showSavedResult() {
+        
+        DispatchQueue.main.async {
+            
+            self.collectionView.reloadData()
+        }
+    }
+    
+    func showNewResult() {
+        deleteExistingCoreDataPhoto()
+        savedPhotoObjects.removeAll()
+        
+        getFlickrPhotos()
+    }
     
     @objc func deleteBtnPressed(_ sender: UIBarButtonItem) {
         
@@ -218,7 +249,7 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 100
+        return savedPhotoObjects.count
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -228,19 +259,10 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlickrViewCell", for: indexPath) as! FlickrViewCell
         
-        switch indexPath.section {
-        case 0:
-            let photoObject = fetchedResultsController.object(at: indexPath)
-            DispatchQueue.main.async {
-                let image = UIImage(data: photoObject.imageData! as Data)
-                cell.photoImage.image = image
-            }
-        default:
-            let shuffledFlickrPhotos = flickrPhotos.shuffled()
-            if let url = URL(string: shuffledFlickrPhotos[indexPath.row].imageURLString()) {
-                cell.setupCell(url: url)
-            }
-        }
+        let photoObject = savedPhotoObjects[indexPath.row]
+        activityIndicator.stopAnimating()
+        cell.initWithPhoto(photoObject)
+        
         if cell.isSelected {
             cell.layer.borderColor = UIColor.blue.cgColor
             cell.layer.borderWidth = 3
