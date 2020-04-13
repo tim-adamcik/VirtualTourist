@@ -33,8 +33,8 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     var fetchedResultsController: NSFetchedResultsController<Photo>!
 
     
-    fileprivate func reloadSavedData() {
-        if fetchedResultsController == nil {
+    fileprivate func reloadSavedData() -> [Photo]? {
+        var photoArray: [Photo] = []
             let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
             let predicate = NSPredicate(format: "pin == %@", argumentArray: [pin!])
             fetchRequest.predicate = predicate
@@ -44,11 +44,20 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
             
             fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DataController.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
             fetchedResultsController.delegate = self
-        }
+        
         do {
             try fetchedResultsController.performFetch()
+            let photoCount = try fetchedResultsController.managedObjectContext.count(for: fetchedResultsController.fetchRequest)
+            
+            for index in 0..<photoCount {
+                
+                photoArray.append(fetchedResultsController.object(at: IndexPath(row: index, section: 0)))
+            }
+            return photoArray
+            
         } catch {
             print("error performing fetch")
+            return nil
         }
     }
     
@@ -130,7 +139,12 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         
         setCenter()
         activityIndicator.startAnimating()
-        getFlickrPhotos()
+        
+        if pin.photo != nil  {
+            savedPhotoObjects = pin.photo!.allObjects as? [Photo] ?? []
+        } else {
+            getFlickrPhotos()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -204,16 +218,11 @@ extension PhotoAlbumViewController : UICollectionViewDelegateFlowLayout, UIColle
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch section {
-        case 0:
-            return fetchedResultsController.sections?[section].numberOfObjects ?? 0
-        default:
-            return flickrPhotos.count
-        }
+        return 100
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 2
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
