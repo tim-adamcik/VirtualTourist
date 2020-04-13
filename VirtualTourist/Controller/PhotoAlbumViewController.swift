@@ -212,8 +212,8 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         
         if let selectedIndexPaths = collectionView.indexPathsForSelectedItems {
             for indexPath in selectedIndexPaths {
-                let savedPhoto = fetchedResultsController.object(at: indexPath)
-                for photo in fetchedResultsController.fetchedObjects! {
+                let savedPhoto = savedPhotoObjects[indexPath.row]
+                for photo in savedPhotoObjects {
                     if photo.imageURL == savedPhoto.imageURL {
                         DataController.shared.viewContext.delete(photo)
                        try? DataController.shared.viewContext.save()

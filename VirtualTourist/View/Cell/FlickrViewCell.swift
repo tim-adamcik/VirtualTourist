@@ -36,11 +36,21 @@ class FlickrViewCell: UICollectionViewCell {
             if error == nil {
                 DispatchQueue.main.async {
                     self.photoImage.image = UIImage(data: data! as Data)
-                   
+                    self.saveImageDataToCoreData(photo, imageData: data! as Data)
                 }
             }
         }
         .resume()
+    }
+    
+    func saveImageDataToCoreData(_ photo: Photo, imageData: Data) {
+        
+        do {
+            photo.imageData = imageData
+            try DataController.shared.viewContext.save()
+        } catch {
+            print("saving photo image failed")
+        }
     }
 //
 //    func setupCell(url: URL) {
