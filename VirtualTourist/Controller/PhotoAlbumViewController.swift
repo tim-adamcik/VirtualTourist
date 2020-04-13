@@ -225,37 +225,41 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         }
     }
     
-    @IBAction func newCollectionBtnPressed(_ sender: Any) {
-        
+    fileprivate func getRandomFlickrImages() {
         let random = Int.random(in: 2...4)
-        activityIndicator.startAnimating()
-        deleteExistingCoreDataPhoto()
-        activityIndicator.stopAnimating()
-        
         _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!, page: random, completion: { (photos, error) in
-        
-        if let error = error {
-            DispatchQueue.main.async {
-                self.activityIndicator.stopAnimating()
-                let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
-                alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
-                self.present(alertVC, animated: true)
-                print(error.localizedDescription)
-            }
-        } else {
-            if let photos = photos {
-                
+            
+            if let error = error {
                 DispatchQueue.main.async {
-                    self.flickrPhotos = photos
-                    self.saveToCoreData(photos: photos)
                     self.activityIndicator.stopAnimating()
-                    self.collectionView.reloadData()
-                    self.savedPhotoObjects = self.reloadSavedData()!
-                    self.showSavedResult()
+                    let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
+                    alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+                    self.present(alertVC, animated: true)
+                    print(error.localizedDescription)
+                }
+            } else {
+                if let photos = photos {
+                    
+                    DispatchQueue.main.async {
+                        self.flickrPhotos = photos
+                        self.saveToCoreData(photos: photos)
+                        self.activityIndicator.stopAnimating()
+                        self.collectionView.reloadData()
+                        self.savedPhotoObjects = self.reloadSavedData()!
+                        self.showSavedResult()
+                    }
                 }
             }
-        }
         })
+    }
+    
+    @IBAction func newCollectionBtnPressed(_ sender: Any) {
+        
+        
+        activityIndicator.startAnimating()
+        deleteExistingCoreDataPhoto()
+        getRandomFlickrImages()
+        activityIndicator.stopAnimating()
     }
 }
 
