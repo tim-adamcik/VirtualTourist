@@ -220,6 +220,8 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
                     }
                 }
             }
+            savedPhotoObjects = reloadSavedData()!
+            showSavedResult()
         }
     }
     
