@@ -19,7 +19,7 @@ class FlickrClient {
     var flickrSearch = "flickr.photos.search"
            
     
-    func getFlickrPhotoURLs(lat: Double, lon: Double, completion: @escaping ([FlickrPhoto]?, Error?) -> Void) {
+    func getFlickrPhotoURLs(lat: Double, lon: Double, page: Int, completion: @escaping ([FlickrPhoto]?, Error?) -> Void) {
         guard var components = URLComponents(string: flickrBase) else {
             completion(nil, NetworkingError.invalidURLComponents)
             return }
@@ -30,7 +30,8 @@ class FlickrClient {
         let queryItem5 = URLQueryItem(name: "lon", value: String(lon))
         let queryItem6 = URLQueryItem(name: "radius", value: "10")
         let queryItem7 = URLQueryItem(name: "nojsoncallback", value: "1")
-        components.queryItems = [queryItem1, queryItem2, queryItem3, queryItem4, queryItem5, queryItem6, queryItem7]
+        let queryItem8 = URLQueryItem(name: "page", value: String(page))
+        components.queryItems = [queryItem1, queryItem2, queryItem3, queryItem4, queryItem5, queryItem6, queryItem7, queryItem8]
         
         guard let url = components.url else {
             completion(nil, NetworkingError.invalidURL)

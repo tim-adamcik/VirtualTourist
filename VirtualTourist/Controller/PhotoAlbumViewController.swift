@@ -106,7 +106,7 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     }
     
     fileprivate func getFlickrPhotos() {
-        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!) { (photos, error) in
+        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!, page: 1) { (photos, error) in
             
             if let error = error {
                 DispatchQueue.main.async {
@@ -226,7 +226,36 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
     }
     
     @IBAction func newCollectionBtnPressed(_ sender: Any) {
-        collectionView.reloadData()
+        
+        let random = Int.random(in: 2...4)
+        activityIndicator.startAnimating()
+        deleteExistingCoreDataPhoto()
+        activityIndicator.stopAnimating()
+        
+        _ = FlickrClient.shared.getFlickrPhotoURLs(lat: currentLatitude!, lon: currentLongitude!, page: random, completion: { (photos, error) in
+        
+        if let error = error {
+            DispatchQueue.main.async {
+                self.activityIndicator.stopAnimating()
+                let alertVC = UIAlertController(title: "Error", message: "Error retrieving data", preferredStyle: .alert)
+                alertVC.addAction(UIAlertAction(title: "Okay", style: .default, handler: nil))
+                self.present(alertVC, animated: true)
+                print(error.localizedDescription)
+            }
+        } else {
+            if let photos = photos {
+                
+                DispatchQueue.main.async {
+                    self.flickrPhotos = photos
+                    self.saveToCoreData(photos: photos)
+                    self.activityIndicator.stopAnimating()
+                    self.collectionView.reloadData()
+                    self.savedPhotoObjects = self.reloadSavedData()!
+                    self.showSavedResult()
+                }
+            }
+        }
+        })
     }
 }
 
