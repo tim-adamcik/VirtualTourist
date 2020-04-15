@@ -97,17 +97,21 @@ class TravelLocationsViewController: UIViewController, MKMapViewDelegate, NSFetc
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation { return nil }
+        
         let identifer = "idForView"
-        var view = mapView.dequeueReusableAnnotationView(withIdentifier: identifer) as? MKPinAnnotationView
-        if view == nil {
-            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifer)
-            view!.canShowCallout = true
-            view!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
-            return view
+        var pinView: MKPinAnnotationView
+        
+        if let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifer) as? MKPinAnnotationView {
+            pinView = annotationView
         } else {
-            view!.annotation = annotation
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifer)
         }
-        return view
+        
+        pinView.canShowCallout = true
+        pinView.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+        pinView.annotation = annotation
+        return pinView
     }
     
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {

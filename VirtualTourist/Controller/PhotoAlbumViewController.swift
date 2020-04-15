@@ -244,7 +244,6 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
                         self.flickrPhotos = photos
                         self.saveToCoreData(photos: photos)
                         self.activityIndicator.stopAnimating()
-                        self.collectionView.reloadData()
                         self.savedPhotoObjects = self.reloadSavedData()!
                         self.showSavedResult()
                     }
