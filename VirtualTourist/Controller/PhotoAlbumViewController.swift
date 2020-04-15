@@ -173,9 +173,6 @@ class PhotoAlbumViewController: UIViewController, NSFetchedResultsControllerDele
         
                 for flickrPhoto in photos {
                     let photo = Photo(context: DataController.shared.viewContext)
-                    if let url = URL(string: flickrPhoto.imageURLString()) {
-                      photo.imageData = try? Data(contentsOf: url)
-                    }
                     photo.imageURL = flickrPhoto.imageURLString()
                     photo.pin = pin
                     savedPhotoObjects.append(photo)
